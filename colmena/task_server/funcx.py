@@ -8,7 +8,7 @@ from functools import partial, update_wrapper
 from typing import Dict, Callable, Optional, Tuple
 from concurrent.futures import Future
 
-from funcx import FuncXClient, FuncXExecutor
+from globus_compute_sdk import Client as FuncXClient, Executor as FuncXExecutor
 
 from colmena.task_server.base import run_and_record_timing, FutureBasedTaskServer
 from colmena.queue.python import PipeQueues

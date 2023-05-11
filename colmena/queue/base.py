@@ -227,7 +227,7 @@ class ColmenaQueues:
                 # Pydantic prefers to not have types as attributes, so we
                 # get the string corresponding to the type of the store we use
                 'proxystore_type': get_class_path(type(store)),
-                'proxystore_kwargs': store.kwargs
+                'proxystore_config': store.config()
             })
 
         # Create a new Result object

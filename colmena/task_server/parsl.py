@@ -363,14 +363,14 @@ class ParslTaskServer(FutureBasedTaskServer):
             if not isinstance(function, ExecutableTask):
                 wrapped_function = partial(run_and_record_timing, function)
                 wrapped_function = update_wrapper(wrapped_function, function)
-                wrapped_function = proxy_transform(wrapped_function, connector="redis", package_path="/dev/shm/proxied-site-packages")
+                wrapped_function = proxy_transform(wrapped_function, connector="redis", package_path="/dev/shm/proxied-site-packages", network="hsn0")
                 app = PythonApp(wrapped_function, **options)
                 self.methods_[name] = (app, 'basic')
             else:
                 logger.info(f'Building a chain of apps for an ExecutableTask, {function.__name__}')
                 # If it is an executable, the function we launch initially is a "preprocess inputs" function
                 preprocess_fun = partial(_execute_preprocess, function)
-                preprocess_fun = proxy_transform(preprocess_fun, connector="redis", package_path="/dev/shm/proxied-site-packages")
+                preprocess_fun = proxy_transform(preprocess_fun, connector="redis", package_path="/dev/shm/proxied-site-packages", network="hsn0")
                 preprocess_fun.__name__ = f'{name}_preprocess'
                 preprocess_app = PythonApp(preprocess_fun, **options)
 
@@ -381,7 +381,7 @@ class ParslTaskServer(FutureBasedTaskServer):
 
                 # Make the post-process app, which gathers the results and puts them in the "result object"
                 postprocess_fun = partial(_execute_postprocess, function)
-                postprocess_fun = proxy_transform(postprocess_fun, connector="redis", package_path="/dev/shm/proxied-site-packages")
+                postprocess_fun = proxy_transform(postprocess_fun, connector="redis", package_path="/dev/shm/proxied-site-packages", network="hsn0")
                 postprocess_fun.__name__ = f'{name}_postprocess'
                 postprocess_app = PythonApp(postprocess_fun, **options)
 

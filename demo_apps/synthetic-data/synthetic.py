@@ -9,7 +9,7 @@ from datetime import datetime
 
 import numpy as np
 import proxystore as ps
-from funcx import FuncXClient
+from globus_compute_sdk import Client as FuncXClient
 from parsl import HighThroughputExecutor
 from parsl.addresses import address_by_hostname
 from parsl.config import Config
@@ -257,26 +257,22 @@ if __name__ == '__main__':
     ps_name: str | None
     if args.ps_file:
         ps_name = 'file'
-        ps.store.init_store('file', name=ps_name, store_dir=args.ps_file_dir)
+        store = ps.store.Store(ps_name, ps.connectors.file.FileConnector(args.ps_file_dir))
+        ps.store.register_store(store)
+
     elif args.ps_globus:
         ps_name = 'globus'
-        endpoints = ps.store.globus.GlobusEndpoints.from_json(
+        endpoints = ps.connectors.globus.GlobusEndpoints.from_config(
             args.ps_globus_config,
         )
-        ps.store.init_store(
-            'globus',
-            name=ps_name,
-            endpoints=endpoints,
-            timeout=60,
+        store = ps.store.Store(ps_name, 
+            ps.connectors.globus.connector.GlobusConnector(endpoints, timeout=60)
         )
+        ps.store.register_store(store)
     elif args.ps_redis:
         ps_name = 'redis'
-        ps.store.init_store(
-            'redis',
-            name=ps_name,
-            hostname=args.redis_host,
-            port=args.redis_port,
-        )
+        store = ps.store.Store(ps_name, ps.connectors.redis.RedisConnector(args.redis_host, args.redis_port))
+        ps.store.register_store(store)
     else:
         ps_name = None
 
@@ -355,7 +351,7 @@ if __name__ == '__main__':
     doer.join()
 
     if ps_name is not None:
-        ps.store.get_store(ps_name).cleanup()
+        ps.store.get_store(ps_name).close()
 
     # Print the output result
     logging.info(f'Finished. Runtime = {time.time() - start_time}s')

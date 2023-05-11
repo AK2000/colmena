@@ -37,7 +37,7 @@ def import_class(path: str) -> Type[Any]:
 def get_store(
     name: str,
     kind: Optional[Union[Type[Store], str]] = None,
-    **kwargs: Any,
+    config: Optional[dict[str, Any]] = None,
 ) -> Optional[Store]:
     """Get a Store by name or create one if it does not already exist.
 
@@ -60,7 +60,7 @@ def get_store(
     if store is None and kind is not None:
         if isinstance(kind, str):
             kind = import_class(kind)
-        store = kind(name=name, **kwargs)
+        store = kind.from_config(config)
         proxystore.store.register_store(store)
     return store
 
@@ -164,10 +164,10 @@ def store_proxy_stats(proxy: Proxy, proxy_timing: dict):
 
     # Get the store associated with this proxy
     store = get_store(proxy)
-    if store.has_stats:
+    if store.metrics:
         # Get the stats and convert them to a JSON-serializable form
-        stats = store.stats(proxy)
-        stats = dict((k, asdict(v)) for k, v in stats.items())
+        stats = store.metrics.get_metrics(proxy).as_dict()
+        
     else:
         stats = {}
 

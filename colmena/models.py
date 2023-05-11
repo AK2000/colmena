@@ -162,7 +162,7 @@ class Result(BaseModel):
                                                 "them after the method has completed")
     proxystore_name: Optional[str] = Field(None, description="Name of ProxyStore backend you use for transferring large objects")
     proxystore_type: Optional[str] = Field(None, description="Type of ProxyStore backend being used")
-    proxystore_kwargs: Optional[Dict] = Field(None, description="Kwargs to reinitialize ProxyStore backend")
+    proxystore_config: Optional[Dict] = Field(None, description="Kwargs to reinitialize ProxyStore backend")
     proxystore_threshold: Optional[int] = Field(None,
                                                 description="Proxy all input/output objects larger than this threshold in bytes")
 
@@ -308,7 +308,7 @@ class Result(BaseModel):
                 store = get_store(
                     name=self.proxystore_name,
                     kind=self.proxystore_type,
-                    **self.proxystore_kwargs,
+                    config=self.proxystore_config,
                 )
                 value_proxy = store.proxy(value, evict=evict)
                 logger.debug(f'Proxied object of type {type(value)} with id={id(value)}')

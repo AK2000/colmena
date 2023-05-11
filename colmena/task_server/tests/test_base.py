@@ -61,7 +61,7 @@ def test_run_function(store):
     result.proxystore_name = store.name
     result.proxystore_type = f'{store.__class__.__module__}.{store.__class__.__name__}'
     result.proxystore_threshold = 128
-    result.proxystore_kwargs = store.kwargs
+    result.proxystore_kwargs = store.config()
 
     # Serialize it
     result.serialization_method = SerializationMethod.PICKLE

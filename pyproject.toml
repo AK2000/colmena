@@ -26,7 +26,8 @@ dependencies = [
     "parsl>=2022",
     "pydantic==1.*",
     "redis==3.4.*",
-    "proxystore==0.4.*"
+    "proxystore>=0.4.1",
+    dill>=0.3.6
 ]
 
 [tool.setuptools.packages.find]
@@ -37,7 +38,7 @@ repository = "https://github.com/exalearn/colmena"
 documentation = "https://colmena.readthedocs.io/"
 
 [project.optional-dependencies]
-funcx = ['funcx>=1.0.5']
+funcx = ['globus-compute-sdk']
 test = [
     'flake8',
     'pytest',
